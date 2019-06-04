@@ -1,0 +1,39 @@
+@url=http://localhost:9900/
+@json=Content-Type: application/json 
+
+GET {{url}}user/userList
+###
+POST {{url}}user/queryByUserName
+{{json}}
+
+{
+    "userName":"xw"
+}
+###
+POST {{url}}user/addUser
+{{json}}
+
+{
+    "userName":"",
+    "password":"123456",
+    "email":"11527@qq.com",
+    "testYear":"2020",
+    "goalSchool":"杭州师范大学"
+}
+
+###
+POST  {{url}}user/deleteUser
+{{json}}
+
+{
+    "userId":"31"
+}
+
+###
+POST  {{url}}login
+{{json}}
+
+{
+    "userName":"xwy",
+    "password":"123456"
+}
