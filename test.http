@@ -1,7 +1,13 @@
-@url=http://localhost:9900/
+@url=http://47.106.122.35:9900
 @json=Content-Type: application/json 
 
-GET {{url}}user/userList
+POST {{url}}user/userList
+{{json}}
+
+{
+    "page":"1",
+    "numOfPage":"3"
+}
 ###
 POST {{url}}user/queryByUserName
 {{json}}
@@ -9,12 +15,14 @@ POST {{url}}user/queryByUserName
 {
     "userName":"xw"
 }
+
+
 ###
 POST {{url}}user/addUser
 {{json}}
 
 {
-    "userName":"",
+    "userName":"super1",
     "password":"123456",
     "email":"11527@qq.com",
     "testYear":"2020",
@@ -26,7 +34,7 @@ POST  {{url}}user/deleteUser
 {{json}}
 
 {
-    "userId":"31"
+    "userId":"41"
 }
 
 ###
@@ -37,3 +45,20 @@ POST  {{url}}login
     "userName":"xwy",
     "password":"123456"
 }
+
+### 推送
+POST  {{url}}info/infoList
+{{json}}
+
+{
+    "page":"1",
+    "numOfPage":"4"
+}
+### 推送根据标题查询
+POST  {{url}}info/queryByInfoTitle
+{{json}}
+
+{
+    "infoTitle":"杭"
+}
+

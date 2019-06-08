@@ -16,7 +16,9 @@ exports.login = (req, res) => {
     db.query(sqlStr, (err, results) => {
         if (err) {
             console.log(err);
-            throw err;
+            ens.code = 0;
+            ens.msg = '登录失败';
+            return res.json(ens);
         }
         else if(!results.length){
             ens.code = 0;

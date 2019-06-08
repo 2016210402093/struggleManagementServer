@@ -6,7 +6,8 @@ let app = express();
 const port = config.port;
 
 const login = require('./mid_of_manage/login');
-const users = require('./mid_of_manage/users');
+const user = require('./mid_of_manage/users');
+const info = require('./mid_of_manage/info');
 
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -24,7 +25,8 @@ app.use(express.json());//开启json解析
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/login', login);
-app.use('/user', users);
+app.use('/user', user);
+app.use('/info',info);
 
 
 app.get('/test', function(request, response){
