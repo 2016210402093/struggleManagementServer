@@ -10,52 +10,32 @@ let entries = require('./entries');
 // 院校信息列表
 exports.infoList = (req, res) => {
     let ens = Object.assign({}, entries); 
-    let page = req.body.page;
-    if (page == null) page = 1; 
-    let numOfPage = req.body.numOfPage;
-    if (numOfPage == null) numOfPage = 3; 
-    let sqlStr = `SELECT INFO_ID as infoId,INFO_TITLE as infoTitle,
-    INFO_SUBTITLE as infoSubtitle,IMG_URL as imgUrl,INFO_CONTENT AS infoContent,
-    USER_ID as userId ,CREATION_TIME as creationTime,
-    LIKE_NUMBER as likeNumber from SCHOOL_INFO ORDER BY CREATION_TIME desc limit ${(page-1)*numOfPage},${numOfPage}`;
-    db.query(sqlStr, (err, results) => {
-        if (err) {
-            console.log(err);
-            ens.code = 0;
-            ens.msg = '查询失败';
-            return res.json(ens);
-            
-        }
-        else {
-            
-            return res.json(results)
-        }
-            
-    });
-     
-
-}
-
-//根据标题查询院校信息
-exports.queryByInfoTitle = (req, res) => {
-    let ens = Object.assign({}, entries); 
-    let infoTitle = req.body.infoTitle;
-    let page = req.body.page;
-    if (page == null) page = 1; 
-    let numOfPage = req.body.numOfPage;
-    if (numOfPage == null) numOfPage = 3; 
-    let sqlStr = `SELECT INFO_ID as infoId,INFO_TITLE as infoTitle,
-    INFO_SUBTITLE as infoSubtitle,IMG_URL as imgUrl,INFO_CONTENT AS infoContent,
-    USER_ID as userId ,CREATION_TIME as creationTime,
-    LIKE_NUMBER as likeNumber from SCHOOL_INFO  where INFO_TITLE like '%${infoTitle}%' ORDER BY CREATION_TIME DESC
-    limit ${(page-1)*numOfPage},${numOfPage} `;
+    let sqlStr = `select INFO_ID, INFO_TITLE, CREATION_TIME, INFO_SUBTITLE, LIKE_NUMBER, IMG_URL  from SCHOOL_INFO  order by INFO_ID DESC`;
     db.query(sqlStr, (err, results) => {
         if (err) {
             console.log(err);
             throw err;
         }
         else {
-            return res.json(results)
+            return res.json(formatCreationTime(results))
+        }
+    });    
+
+}
+
+//根据标题查询院校信息
+exports.queryByInfoTitle = (req, res) => {
+
+    let infoTitle = req.body.infoTitle;
+    let ens = Object.assign({}, entries); 
+    let sqlStr = `select INFO_ID, INFO_TITLE, CREATION_TIME, INFO_SUBTITLE, LIKE_NUMBER, IMG_URL  from SCHOOL_INFO  where INFO_TITLE like '%${infoTitle}%'  order by INFO_ID DESC`;
+    db.query(sqlStr, (err, results) => {
+        if (err) {
+            console.log(err);
+            throw err;
+        }
+        else {
+            return res.json(formatCreationTime(results))
         }
     });    
 
@@ -81,4 +61,29 @@ exports.deleteInfo = (req, res) => {
         }
     });    
 
+}
+
+//添加院校信息
+exports.addInfo = (req, res) =>{
+    let ens = Object.assign({}, entries); 
+    let sqlStr = 'insert into SCHOOL_INFO set ?';
+    db.query(sqlStr, {
+        USER_ID: req.body.userId,
+        INFO_TITLE: req.body.infoTitle,
+        INFO_SUBTITLE: req.body.infoSubTitle,
+        INFO_CONTENT: req.body.infoContent,
+        IMG_URL: 'infoImg/25xwy20191616181549.jpg',
+    }, (err, results) => {
+        if (err) {
+            console.log(err);
+            ens.code = 0;
+            ens.msg = '添加失败';
+            return res.json(ens);
+        }
+        else {
+            ens.code = 1;
+            ens.msg = '添加成功';
+            return res.json(ens);
+        }
+    });
 }

@@ -6,16 +6,21 @@ let db = mysql.createConnection(config.db);
 
 let entries = require('./entries');
 
+let moment = require('moment');
 
+
+
+formatCreationTime = (results) =>{
+    for(let i=0; i<results.length; ++i){
+        results[i].CREATION_TIME = moment(results[i].CREATION_TIME).format("YYYY-MM-DD HH:mm:ss");
+    }
+    return results;
+}
 
 // 用户列表
 exports.userList = (req, res) => {
     let ens = Object.assign({}, entries); 
-    let page = req.body.page;
-    let numOfPage = req.body.numOfPage;
-    let sqlStr = `select USER.USER_ID as userId,USER_NAME as userName,USER_SIGNATURE as userSigature,USER_EMAIL as email,USER_IMG as userImg,USER_TYPE as userType,TEST_YEAR as testYear,GOAL_SCHOOL AS goalSchool,ifnull(essay_num,0) as essayNum FROM USER
-    left JOIN (select USER_ID,count(*) as essay_num from ESSAY GROUP BY USER_ID) as temp_A
-    on  USER.USER_ID = temp_A.USER_ID ORDER BY USER_NAME limit ${(page-1)*numOfPage},${numOfPage}`;
+    let sqlStr = `select * from USER WHERE USER_TYPE = 1`;
     db.query(sqlStr, (err, results) => {
         if (err) {
             console.log(err);
@@ -23,7 +28,7 @@ exports.userList = (req, res) => {
         }
         else {
             
-            return res.json(results)
+            return res.json(formatCreationTime(results))
         }
     });    
 
@@ -33,21 +38,14 @@ exports.userList = (req, res) => {
 exports.queryByUserName = (req, res) => {
     let ens = Object.assign({}, entries); 
     let userName = req.body.userName;
-    let page = req.body.page;
-    if (page == null) page = 1; 
-    let numOfPage = req.body.numOfPage;
-    if (numOfPage == null) numOfPage = 3; 
-    let sqlStr = `select USER.USER_ID as userId,USER_NAME as userName,USER_SIGNATURE as userSigature,USER_EMAIL as email,USER_IMG as userImg,USER_TYPE as userType,TEST_YEAR as testYear,GOAL_SCHOOL AS goalSchool,ifnull(essay_num,0) as essayNum FROM USER
-    left JOIN (select USER_ID,count(*) as essay_num from ESSAY GROUP BY USER_ID) as temp_A
-    on  USER.USER_ID = temp_A.USER_ID where USER_NAME like '%${userName}%' limit ${(page-1)*numOfPage},${numOfPage}`;
+    let sqlStr = `select * from USER WHERE USER_TYPE = 1 AND USER_NAME like '%${userName}%'`;
     db.query(sqlStr, (err, results) => {
         if (err) {
             console.log(err);
             throw err;
         }
         else {
-            console.log(sqlStr);
-            return res.json(results)
+            return res.json(formatCreationTime(results))
         }
     });    
 
